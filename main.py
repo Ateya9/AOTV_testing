@@ -12,10 +12,14 @@ def gen_temple(num_temple_rooms: int = 11) -> list:
 def run_temple_always_upgrade(temple: list, aotv: bool = False, rr: bool = False) -> list:
     num_temple_rooms = len(temple)
     incurs_per_area, num_areas = (4, 3) if aotv else (3, 4)
+    available_rooms = list(range(num_temple_rooms))
     for _ in range(num_areas):
-        available_rooms = [ele for ele in range(num_temple_rooms) if temple[ele] < 3]  # Rooms that aren't maxed.
-        for i in sample(available_rooms, incurs_per_area):
-            temple[i] += 1
+        for picked_room in sample(available_rooms, incurs_per_area):
+            if rr and temple[picked_room] == 1:
+                temple[picked_room] += randint(0, 1)
+            temple[picked_room] += 1
+            if temple[picked_room] == 3:
+                available_rooms.remove(picked_room)
     return temple
 
 
