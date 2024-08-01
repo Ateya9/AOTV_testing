@@ -23,15 +23,18 @@ def run_temple_always_upgrade(temple: list, aotv: bool = False, rr: bool = False
     return temple
 
 
-if __name__ == '__main__':
+def calc_results(run_method_func, num_runs: int = 100000, aotv: bool = False, rr: bool = False) -> float:
     temple_room_level_totals = Counter()
-    for i in range(100000):
-        temple_room_level_totals += Counter(run_temple_always_upgrade(gen_temple()))
-    vanilla_t3_room_ratio = round(temple_room_level_totals[3] / temple_room_level_totals.total(), 4)
-    print(f"Ratio of t3 rooms WITHOUT Artefacts of the Vaal: {vanilla_t3_room_ratio}")
+    for _ in range(num_runs):
+        temple_room_level_totals += Counter(run_method_func(gen_temple(), aotv, rr))
+    ratio = round(temple_room_level_totals[3] / temple_room_level_totals.total(), 4)
+    return ratio
 
-    temple_room_level_totals = Counter()
-    for i in range(100000):
-        temple_room_level_totals += Counter(run_temple_always_upgrade(gen_temple(), True))
-    aotv_t3_room_ratio = round(temple_room_level_totals[3] / temple_room_level_totals.total(), 4)
-    print(f"Ratio of t3 rooms WITH Artefacts of the Vaal: {aotv_t3_room_ratio}")
+
+if __name__ == '__main__':
+    print(f"Ratio of t3 rooms WITHOUT Artefacts of the Vaal: {calc_results(run_temple_always_upgrade)}")
+    print(f"Ratio of t3 rooms WITH Artefacts of the Vaal: {calc_results(run_temple_always_upgrade, aotv=True)}")
+    print(f"Ratio of t3 rooms WITHOUT AOTV and WITH Resource Reallocation: "
+          f"{calc_results(run_temple_always_upgrade, rr=True)}")
+    print(f"Ratio of t3 rooms WITH AOTV and WITH Resource Reallocation: "
+          f"{calc_results(run_temple_always_upgrade, aotv=True, rr=True)}")
