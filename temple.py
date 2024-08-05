@@ -58,6 +58,22 @@ class Temple:
         self.rooms[9].connections = [self.rooms[i] for i in (6, 7, 10)]
         self.rooms[10].connections = [self.rooms[i] for i in (7, 8, 9)]
 
+    def apply_nexus(self):
+        nexus_room: TempleRoom
+        try:
+            nexus_room_index = [room.room_type for room in self.rooms].index("Adjacent Room Levels")
+            nexus_room = self.rooms[nexus_room_index]
+        except ValueError:
+            return
+        valid_connections = [room for room in nexus_room.connections if room.room_type != "un-tiered"]
+        connections_to_upgrade = valid_connections
+        if len(valid_connections) == 0:
+            return
+        if nexus_room.room_tier != 3:
+            connections_to_upgrade = sample(valid_connections, nexus_room.room_tier)
+        for room in connections_to_upgrade:
+            room += 1 if room.room_tier < 3 else 0
+
     def __len__(self):
         return len(self.rooms)
 
