@@ -7,6 +7,7 @@ class TempleRoom:
         """
         self.room_tier = room_tier
         self.room_type = room_type
+        self.connections: list[TempleRoom] = []
 
     def __int__(self) -> int:
         return int(self.room_tier)

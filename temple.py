@@ -46,6 +46,17 @@ class Temple:
             rooms_to_tier[i] += 1
             rooms_to_tier[i].room_type = rooms_to_tier_types[i]
             self.room_types_remaining.remove(rooms_to_tier_types[i])
+        self.rooms[0].connections = [self.rooms[i] for i in (2, 3)]
+        self.rooms[1].connections = [self.rooms[i] for i in (4, 5)]
+        self.rooms[2].connections = [self.rooms[i] for i in (0, 3, 6)]
+        self.rooms[3].connections = [self.rooms[i] for i in (0, 2, 4, 6, 7)]
+        self.rooms[4].connections = [self.rooms[i] for i in (1, 3, 5, 7, 8)]
+        self.rooms[5].connections = [self.rooms[i] for i in (1, 4, 8)]
+        self.rooms[6].connections = [self.rooms[i] for i in (2, 3, 7, 9)]
+        self.rooms[7].connections = [self.rooms[i] for i in (3, 4, 6, 8, 9, 10)]
+        self.rooms[8].connections = [self.rooms[i] for i in (4, 5, 7, 10)]
+        self.rooms[9].connections = [self.rooms[i] for i in (6, 7, 10)]
+        self.rooms[10].connections = [self.rooms[i] for i in (7, 8, 9)]
 
     def __len__(self):
         return len(self.rooms)
