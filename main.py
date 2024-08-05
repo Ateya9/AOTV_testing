@@ -1,12 +1,7 @@
 from random import sample, randint
 from collections import Counter
-
-
-def gen_temple(num_temple_rooms: int = 11) -> list:
-    temple: list[int] = [0] * num_temple_rooms
-    for room_num in sample(range(num_temple_rooms), 7):  # Set up 7 random rooms to be tier 1 already.
-        temple[room_num] += 1
-    return temple
+from temple_room import TempleRoom
+from temple import Temple
 
 
 def run_temple_always_upgrade(temple: list, aotv: bool = False, rr: bool = False) -> list:
@@ -26,7 +21,8 @@ def run_temple_always_upgrade(temple: list, aotv: bool = False, rr: bool = False
 def calc_results(run_method_func, num_runs: int = 100000, aotv: bool = False, rr: bool = False) -> float:
     temple_room_level_totals = Counter()
     for _ in range(num_runs):
-        temple_room_level_totals += Counter(run_method_func(gen_temple(), aotv, rr))
+        current_temple = run_method_func(Temple(), aotv, rr)
+        temple_room_level_totals += Counter(list(map(int, current_temple)))
     ratio = round(temple_room_level_totals[3] / temple_room_level_totals.total(), 4)
     return ratio
 
