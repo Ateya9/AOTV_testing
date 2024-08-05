@@ -2,7 +2,7 @@ class TempleRoom:
     def __init__(self, room_tier: int = 0, room_type: str = "un-tiered"):
         """
         An object that represents a room within a temple of Atzoatl.
-        :param room_tier: The tier of this room. Defaults to 0
+        :param room_tier: The tier of this room. Defaults to 0. Should always be positive.
         :param room_type: The type for this room. Defaults to 'un-tiered'
         """
         self.room_tier = room_tier
