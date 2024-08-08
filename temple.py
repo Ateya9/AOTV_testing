@@ -3,7 +3,7 @@ from random import sample
 
 
 class Temple:
-    _valid_room_types: list[str] = [
+    VALID_ROOM_TYPES: list[str] = [
         "Unique Sacrifice",
         "Body Armours",
         "Jewellery",
@@ -36,16 +36,17 @@ class Temple:
         An object representing a temple of Atzoatl.
         :param num_starting_tiered_rooms: How many rooms to start at tier 1.
         """
-        self._room_types_remaining = Temple._valid_room_types.copy()
+        self._room_types_remaining = Temple.VALID_ROOM_TYPES.copy()
         self.rooms: list[TempleRoom] = []
         for _ in range(11):
             self.rooms.append(TempleRoom())
-        rooms_to_tier = sample(self.rooms, num_starting_tiered_rooms)
-        rooms_to_tier_types = sample(self._valid_room_types, num_starting_tiered_rooms)
-        for i in range(len(rooms_to_tier)):
-            rooms_to_tier[i] += 1
-            rooms_to_tier[i].room_type = rooms_to_tier_types[i]
-            self._room_types_remaining.remove(rooms_to_tier_types[i])
+        rooms_to_tier = sample(range(len(self.rooms)), num_starting_tiered_rooms)
+        rooms_to_tier_types = sample(self._room_types_remaining, num_starting_tiered_rooms)
+        print(self._room_types_remaining)
+        for room_num in rooms_to_tier:
+            self.upgrade_room(room_num, rooms_to_tier_types[0])
+            rooms_to_tier_types.pop(0)
+        print(self._room_types_remaining)
         self.rooms[0].connections = [self.rooms[i] for i in (2, 3)]
         self.rooms[1].connections = [self.rooms[i] for i in (4, 5)]
         self.rooms[2].connections = [self.rooms[i] for i in (0, 3, 6)]
@@ -73,8 +74,9 @@ class Temple:
             raise ValueError(f"room_type already present in temple.")
         if self.rooms[room_num].room_tier == 3:
             raise IndexError(f"Invalid room. Room is already tier 3.")
-
-        if room_type != current_room_type:
+        if current_room_type == TempleRoom.DEFAULT_ROOM_TYPE:
+            self._room_types_remaining.remove(room_type)
+        elif room_type != current_room_type:
             self._room_types_remaining[self._room_types_remaining.index(room_type)] = current_room_type
         self.rooms[room_num] += 1
         self.rooms[room_num].room_type = room_type
@@ -110,3 +112,4 @@ class Temple:
 
 if __name__ == "__main__":
     temple = Temple()
+    print(temple.rooms)
