@@ -36,7 +36,7 @@ class Temple:
         An object representing a temple of Atzoatl.
         :param num_starting_tiered_rooms: How many rooms to start at tier 1.
         """
-        self.room_types_remaining = Temple._valid_room_types.copy()
+        self._room_types_remaining = Temple._valid_room_types.copy()
         self.rooms: list[TempleRoom] = []
         for _ in range(11):
             self.rooms.append(TempleRoom())
@@ -45,7 +45,7 @@ class Temple:
         for i in range(len(rooms_to_tier)):
             rooms_to_tier[i] += 1
             rooms_to_tier[i].room_type = rooms_to_tier_types[i]
-            self.room_types_remaining.remove(rooms_to_tier_types[i])
+            self._room_types_remaining.remove(rooms_to_tier_types[i])
         self.rooms[0].connections = [self.rooms[i] for i in (2, 3)]
         self.rooms[1].connections = [self.rooms[i] for i in (4, 5)]
         self.rooms[2].connections = [self.rooms[i] for i in (0, 3, 6)]
@@ -57,6 +57,10 @@ class Temple:
         self.rooms[8].connections = [self.rooms[i] for i in (4, 5, 7, 10)]
         self.rooms[9].connections = [self.rooms[i] for i in (6, 7, 10)]
         self.rooms[10].connections = [self.rooms[i] for i in (7, 8, 9)]
+
+    @property
+    def room_types_remaining(self):
+        return self._room_types_remaining
 
     def apply_nexus(self):
         nexus_room: TempleRoom
