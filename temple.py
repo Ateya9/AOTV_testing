@@ -59,8 +59,25 @@ class Temple:
         self.rooms[10].connections = [self.rooms[i] for i in (7, 8, 9)]
 
     @property
-    def room_types_remaining(self):
+    def room_types_remaining(self) -> list[str]:
         return self._room_types_remaining
+
+    def get_room_upgrade_option(self) -> str:
+        return sample(self._room_types_remaining, 1)[0]
+
+    def upgrade_room(self, room_num: int, room_type: str):
+        if 0 > room_num >= len(self.rooms):
+            raise IndexError(f"room must be between 0 and {len(self.rooms) - 1}")
+        current_room_type = self.rooms[room_num].room_type
+        if room_type != current_room_type and room_type not in self._room_types_remaining:
+            raise ValueError(f"room_type already present in temple.")
+        if self.rooms[room_num].room_tier == 3:
+            raise IndexError(f"Invalid room. Room is already tier 3.")
+
+        if room_type != current_room_type:
+            self._room_types_remaining[self._room_types_remaining.index(room_type)] = current_room_type
+        self.rooms[room_num] += 1
+        self.rooms[room_num].room_type = room_type
 
     def apply_nexus(self):
         nexus_room: TempleRoom
