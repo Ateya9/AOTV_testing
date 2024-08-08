@@ -60,13 +60,38 @@ class Temple:
         self.rooms[10].connections = [self.rooms[i] for i in (7, 8, 9)]
 
     @property
-    def room_types_remaining(self) -> list[str]:
+    def valid_room_types_remaining(self) -> list[str]:
+        """
+        Returns a list of valid room types that aren't currently present within this temple.
+
+        :return: list[str]
+        """
         return self._room_types_remaining
 
     def get_room_upgrade_option(self) -> str:
+        """
+        Returns a single room type that currently isn't present within this temple to act as a non-resident upgrade
+        option.
+
+        :return: str
+        """
         return sample(self._room_types_remaining, 1)[0]
 
     def upgrade_room(self, room_num: int, room_type: str):
+        """
+        Upgrades the specified room tier and type.
+
+        Raises IndexError if room is already T3.
+
+        Raises IndexError if invalid room number is supplied.
+
+        Raises ValueError if invalid or already present room type is supplied.
+
+        :param room_num: The room number to upgrade.
+        :param room_type: The room type for this room to be changed to.
+
+        :return: None
+        """
         if 0 > room_num >= len(self.rooms):
             raise IndexError(f"room must be between 0 and {len(self.rooms) - 1}")
         current_room_type = self.rooms[room_num].room_type
@@ -82,6 +107,12 @@ class Temple:
         self.rooms[room_num].room_type = room_type
 
     def apply_nexus(self):
+        """
+        Updates the room tiers adjacent to an "Adjacent Room Levels" room. This should be called when a temple run is
+        finished.
+
+        :return: None
+        """
         nexus_room: TempleRoom
         try:
             nexus_room_index = [room.room_type for room in self.rooms].index("Adjacent Room Levels")
