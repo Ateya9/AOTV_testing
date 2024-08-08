@@ -42,11 +42,9 @@ class Temple:
             self.rooms.append(TempleRoom())
         rooms_to_tier = sample(range(len(self.rooms)), num_starting_tiered_rooms)
         rooms_to_tier_types = sample(self._room_types_remaining, num_starting_tiered_rooms)
-        print(self._room_types_remaining)
         for room_num in rooms_to_tier:
             self.upgrade_room(room_num, rooms_to_tier_types[0])
             rooms_to_tier_types.pop(0)
-        print(self._room_types_remaining)
         self.rooms[0].connections = [self.rooms[i] for i in (2, 3)]
         self.rooms[1].connections = [self.rooms[i] for i in (4, 5)]
         self.rooms[2].connections = [self.rooms[i] for i in (0, 3, 6)]
