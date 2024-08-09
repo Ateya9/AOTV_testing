@@ -117,12 +117,11 @@ class Temple:
             nexus_room = self.rooms[nexus_room_index]
         except ValueError:
             return
-        valid_connections = [room for room in nexus_room.connections if room.room_type != "un-tiered"]
-        connections_to_upgrade = valid_connections
-        if len(valid_connections) == 0:
+        connections_to_upgrade = [room for room in nexus_room.connections if room.room_tier > 0]
+        if len(connections_to_upgrade) == 0:
             return
-        if nexus_room.room_tier != 3:
-            connections_to_upgrade = sample(valid_connections, nexus_room.room_tier)
+        if 3 > nexus_room.room_tier < len(connections_to_upgrade):
+            connections_to_upgrade = sample(connections_to_upgrade, nexus_room.room_tier)
         for room in connections_to_upgrade:
             room += 1 if room.room_tier < 3 else 0
 
