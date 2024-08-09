@@ -4,7 +4,7 @@ from temple_room import TempleRoom
 from temple import Temple, ValidRoomType
 
 
-def run_temple_always_upgrade(temple: Temple, aotv: bool = False, rr: bool = False) -> Temple:
+def run_t_always_upgrade(temple: Temple, aotv: bool = False, rr: bool = False) -> Temple:
     """
     Run a temple, always upgrading rooms. Choose a random room type when upgrading un-tiered rooms.
 
@@ -22,7 +22,7 @@ def run_temple_always_upgrade(temple: Temple, aotv: bool = False, rr: bool = Fal
     return temple
 
 
-def calc_results(run_method_func, num_runs: int = 100000, aotv: bool = False, rr: bool = False) -> float:
+def calc_ratio_t3_rooms(run_method_func, num_runs: int = 100000, aotv: bool = False, rr: bool = False) -> float:
     """
     Calculate the ratio of T3 rooms in temples using the supplied function to run them, ignoring room types.
 
@@ -40,10 +40,10 @@ def calc_results(run_method_func, num_runs: int = 100000, aotv: bool = False, rr
     return ratio
 
 
-def calc_results_target_rooms(run_method_func,
-                              target_rooms: list[ValidRoomType],
-                              num_runs: int = 100000,
-                              aotv: bool = False):
+def calc_ratio_target_t3_rooms(run_method_func,
+                               target_rooms: list[ValidRoomType],
+                               num_runs: int = 100000,
+                               aotv: bool = False):
     """
     Calculate the ratio of T3 desired rooms in temples using the supplied function to run them. rr is assumed active.
 
