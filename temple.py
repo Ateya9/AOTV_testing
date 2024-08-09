@@ -168,10 +168,6 @@ class Temple:
             index = [room.type for room in self.rooms].index(item)
             return self.rooms[index]
 
-    def __setitem__(self, key, value):
-        # TODO: Remove __setitem__. upgrade_room() should probably be used instead.
-        self.rooms[key] = value
-
     def __contains__(self, item: TempleRoom):
         return item in self.rooms
 
