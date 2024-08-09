@@ -1,42 +1,43 @@
 from temple_room import TempleRoom
 from random import sample
+from enum import Enum
+
+
+class ValidRoomTypes(Enum):
+    UNIQUE_SACRIFICE = "Unique Sacrifice"
+    BODY_ARMOURS = "Body Armours"
+    JEWELLERY = "Jewellery"
+    PACK_SIZE = "Pack Size"
+    MINIONS = "Minions"
+    CURRENCY = "Currency"
+    MONSTER_REGEN = "Monster Regen"
+    EXPLOSIVES = "Explosives"
+    ITEM_QUANTITY = "Item Quantity"
+    ITEMS = "Items"
+    TRAPS = "Traps"
+    MONOLITH = "Monolith"
+    ITEM_DOUBLE_CORRUPT = "Item Double Corrupt"
+    FIRE = "Fire"
+    ADJACENT_ROOM_LEVELS = "Adjacent Room Levels"
+    POISON = "Poison"
+    WEAPONS = "Weapons"
+    TEMPESTS = "Tempests"
+    TORMENTED_SPIRITS = "Tormented Spirits"
+    MAPS = "Maps"
+    ATZIRI = "Atziri"
+    LIGHTNING = "Lightning"
+    GEM_DOUBLE_CORRUPT = "Gem Double Corrupt"
+    STRONGBOXES = "Strongboxes"
+    BREACH = "Breach"
 
 
 class Temple:
-    VALID_ROOM_TYPES: list[str] = [
-        "Unique Sacrifice",
-        "Body Armours",
-        "Jewellery",
-        "Pack Size",
-        "Minions",
-        "Currency",
-        "Monster Regen",
-        "Explosives",
-        "Item Quantity",
-        "Items",
-        "Traps",
-        "Monolith",
-        "Item Double Corrupt",
-        "Fire",
-        "Adjacent Room Levels",
-        "Poison",
-        "Weapons",
-        "Tempests",
-        "Tormented Spirits",
-        "Maps",
-        "Atziri",
-        "Lightning",
-        "Gem Double Corrupt",
-        "Strongboxes",
-        "Breach"
-    ]
-
     def __init__(self, num_starting_tiered_rooms: int = 7):
         """
         An object representing a temple of Atzoatl.
         :param num_starting_tiered_rooms: How many rooms to start at tier 1.
         """
-        self._room_types_remaining = Temple.VALID_ROOM_TYPES.copy()
+        self._room_types_remaining = list(ValidRoomTypes)
         self.rooms: list[TempleRoom] = []
         for _ in range(11):
             self.rooms.append(TempleRoom())
@@ -75,7 +76,7 @@ class Temple:
         """
         return sample(self._room_types_remaining, 1)[0]
 
-    def upgrade_room(self, room_num: int, room_type: str):
+    def upgrade_room(self, room_num: int, room_type: ValidRoomTypes):
         """
         Upgrades the specified room tier and type.
 
@@ -97,7 +98,7 @@ class Temple:
             raise ValueError(f"room_type already present in temple.")
         if self.rooms[room_num].room_tier == 3:
             raise IndexError(f"Invalid room. Room is already tier 3.")
-        if current_room_type == TempleRoom.DEFAULT_ROOM_TYPE:
+        if current_room_type is None:
             self._room_types_remaining.remove(room_type)
         elif room_type != current_room_type:
             self._room_types_remaining[self._room_types_remaining.index(room_type)] = current_room_type
@@ -113,7 +114,7 @@ class Temple:
         """
         nexus_room: TempleRoom
         try:
-            nexus_room_index = [room.room_type for room in self.rooms].index("Adjacent Room Levels")
+            nexus_room_index = [room.room_type for room in self.rooms].index(ValidRoomTypes.ADJACENT_ROOM_LEVELS)
             nexus_room = self.rooms[nexus_room_index]
         except ValueError:
             return
