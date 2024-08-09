@@ -32,17 +32,28 @@ class ValidRoomTypes(Enum):
 
 
 class Temple:
-    def __init__(self, num_starting_tiered_rooms: int = 7):
+    def __init__(self, num_starting_tiered_rooms: int = 7,
+                 desired_room: None | ValidRoomTypes = None,
+                 start_with_desired_room: bool = False):
         """
         An object representing a temple of Atzoatl.
         :param num_starting_tiered_rooms: How many rooms to start at tier 1.
+        :param desired_room: The desired T3 room for this Temple.
+        :param start_with_desired_room: controls whether this temple starts with a T1 version of the desired room.
         """
         self._room_types_remaining = list(ValidRoomTypes)
         self.rooms: list[TempleRoom] = []
         for _ in range(11):
             self.rooms.append(TempleRoom())
         rooms_to_tier = sample(range(len(self.rooms)), num_starting_tiered_rooms)
-        rooms_to_tier_types = sample(self._room_types_remaining, num_starting_tiered_rooms)
+        rooms_to_tier_types: list[ValidRoomTypes] = []
+        starting_room_types_remaining = self._room_types_remaining.copy()
+        if desired_room is not None:
+            if start_with_desired_room:
+                rooms_to_tier_types.append(desired_room)
+                num_starting_tiered_rooms -= 1
+            starting_room_types_remaining.remove(desired_room)
+        rooms_to_tier_types.extend(sample(starting_room_types_remaining, num_starting_tiered_rooms))
         for room_num in rooms_to_tier:
             self.upgrade_room(room_num, rooms_to_tier_types[0])
             rooms_to_tier_types.pop(0)
@@ -138,7 +149,11 @@ class Temple:
     def __setitem__(self, key, value):
         self.rooms[key] = value
 
+    def __contains__(self, item: ValidRoomTypes):
+        return item in [room.room_type for room in self.rooms]
+
 
 if __name__ == "__main__":
-    temple = Temple()
-    print(temple.rooms)
+    for _ in range(10):
+        temple = Temple(desired_room=ValidRoomTypes.ITEM_DOUBLE_CORRUPT, start_with_desired_room=False)
+        print(ValidRoomTypes.ITEM_DOUBLE_CORRUPT in temple)
