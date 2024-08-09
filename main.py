@@ -40,10 +40,10 @@ def calc_results(run_method_func, num_runs: int = 100000, aotv: bool = False, rr
     return ratio
 
 
-def calc_results_specific_room(run_method_func,
-                               target_rooms: list[ValidRoomType],
-                               num_runs: int = 100000,
-                               aotv: bool = False):
+def calc_results_target_rooms(run_method_func,
+                              target_rooms: list[ValidRoomType],
+                              num_runs: int = 100000,
+                              aotv: bool = False):
     """
     Calculate the ratio of T3 desired rooms in temples using the supplied function to run them. rr is assumed active.
 
