@@ -4,7 +4,7 @@ from temple_room import TempleRoom
 from temple import Temple
 
 
-def run_temple_always_upgrade(temple: list, aotv: bool = False, rr: bool = False) -> list:
+def run_temple_always_upgrade(temple: Temple, aotv: bool = False, rr: bool = False) -> Temple:
     num_temple_rooms = len(temple)
     incurs_per_area, num_areas = (4, 3) if aotv else (3, 4)
     available_rooms = list(range(num_temple_rooms))
@@ -15,6 +15,7 @@ def run_temple_always_upgrade(temple: list, aotv: bool = False, rr: bool = False
             temple[picked_room] += 1
             if temple[picked_room] == 3:
                 available_rooms.remove(picked_room)
+    temple.apply_nexus()
     return temple
 
 
@@ -28,9 +29,13 @@ def calc_results(run_method_func, num_runs: int = 100000, aotv: bool = False, rr
 
 
 if __name__ == '__main__':
-    print(f"Ratio of t3 rooms WITHOUT Artefacts of the Vaal: {calc_results(run_temple_always_upgrade)}")
-    print(f"Ratio of t3 rooms WITH Artefacts of the Vaal: {calc_results(run_temple_always_upgrade, aotv=True)}")
-    print(f"Ratio of t3 rooms WITHOUT AOTV and WITH Resource Reallocation: "
-          f"{calc_results(run_temple_always_upgrade, rr=True)}")
-    print(f"Ratio of t3 rooms WITH AOTV and WITH Resource Reallocation: "
-          f"{calc_results(run_temple_always_upgrade, aotv=True, rr=True)}")
+    print(f"Ratio of t3 rooms WITHOUT Artefacts of the Vaal: 0.2507")
+    print(f"Ratio of t3 rooms WITH Artefacts of the Vaal: 0.2397")
+    print(f"Ratio of t3 rooms WITHOUT AOTV and WITH Resource Reallocation: 0.4812")
+    print(f"Ratio of t3 rooms WITH AOTV and WITH Resource Reallocation: 0.4749")
+    # print(f"Ratio of t3 rooms WITHOUT Artefacts of the Vaal: {calc_results(run_temple_always_upgrade)}")
+    # print(f"Ratio of t3 rooms WITH Artefacts of the Vaal: {calc_results(run_temple_always_upgrade, aotv=True)}")
+    # print(f"Ratio of t3 rooms WITHOUT AOTV and WITH Resource Reallocation: "
+    #       f"{calc_results(run_temple_always_upgrade, rr=True)}")
+    # print(f"Ratio of t3 rooms WITH AOTV and WITH Resource Reallocation: "
+    #       f"{calc_results(run_temple_always_upgrade, aotv=True, rr=True)}")
