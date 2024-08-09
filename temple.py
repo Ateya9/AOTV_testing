@@ -163,6 +163,7 @@ class Temple:
             return self.rooms[index]
 
     def __setitem__(self, key, value):
+        # TODO: Remove __setitem__. upgrade_room() should probably be used instead.
         self.rooms[key] = value
 
     def __contains__(self, item: ValidRoomType):
