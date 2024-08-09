@@ -5,6 +5,14 @@ from temple import Temple, ValidRoomType
 
 
 def run_temple_always_upgrade(temple: Temple, aotv: bool = False, rr: bool = False) -> Temple:
+    """
+    Run a temple, always upgrading rooms. Choose a random room type when upgrading un-tiered rooms.
+
+    :param temple: The Temple object to run.
+    :param aotv: Whether Artefacts of the Vaal is active.
+    :param rr: Whether Resource Reallocation is active.
+    :return: The completed Temple object.
+    """
     incurs_per_area, num_areas = (4, 3) if aotv else (3, 4)
     for _ in range(num_areas):
         for picked_room in sample(temple.valid_rooms_remaining, incurs_per_area):
@@ -15,6 +23,15 @@ def run_temple_always_upgrade(temple: Temple, aotv: bool = False, rr: bool = Fal
 
 
 def calc_results(run_method_func, num_runs: int = 100000, aotv: bool = False, rr: bool = False) -> float:
+    """
+    Calculate the ratio of T3 rooms in temples using the supplied function to run them, ignoring room types.
+
+    :param run_method_func: The function to use for running the temples.
+    :param num_runs: How many temple runs to do.
+    :param aotv: Whether Artefacts of the Vaal is active.
+    :param rr: Whether Resource Reallocation is active.
+    :return: The ratio of T3 rooms.
+    """
     temple_room_level_totals = Counter()
     for _ in range(num_runs):
         current_temple = run_method_func(Temple(), aotv, rr)
@@ -24,6 +41,15 @@ def calc_results(run_method_func, num_runs: int = 100000, aotv: bool = False, rr
 
 
 def calc_results_specific_room(run_method_func, target_room: ValidRoomType, num_runs: int = 100000, aotv: bool = False):
+    """
+    Calculate the ratio of T3 desired rooms in temples using the supplied function to run them. rr is assumed active.
+
+    :param run_method_func: The function to use for running the temples.
+    :param target_room: The desired target room.
+    :param num_runs: How many temple runs to do.
+    :param aotv: Whether Artefacts of the Vaal is active.
+    :return: The ratio of T3 desired target rooms.
+    """
     results = Counter()
     for _ in range(num_runs):
         current_temple: Temple = run_method_func(Temple(), aotv, True)
