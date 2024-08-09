@@ -40,12 +40,15 @@ def calc_results(run_method_func, num_runs: int = 100000, aotv: bool = False, rr
     return ratio
 
 
-def calc_results_specific_room(run_method_func, target_room: ValidRoomType, num_runs: int = 100000, aotv: bool = False):
+def calc_results_specific_room(run_method_func,
+                               target_rooms: list[ValidRoomType],
+                               num_runs: int = 100000,
+                               aotv: bool = False):
     """
     Calculate the ratio of T3 desired rooms in temples using the supplied function to run them. rr is assumed active.
 
     :param run_method_func: The function to use for running the temples.
-    :param target_room: The desired target room.
+    :param target_rooms: The desired target rooms.
     :param num_runs: How many temple runs to do.
     :param aotv: Whether Artefacts of the Vaal is active.
     :return: The ratio of T3 desired target rooms.
@@ -53,11 +56,13 @@ def calc_results_specific_room(run_method_func, target_room: ValidRoomType, num_
     results = Counter()
     for _ in range(num_runs):
         current_temple: Temple = run_method_func(Temple(), aotv, True)
-        try:
-            current_result = current_temple[target_room].tier == 3
-        except ValueError:
-            current_result = False
-        results += Counter([current_result])
+        current_result: list[bool] = []
+        for target_room in target_rooms:
+            try:
+                current_result.append(current_temple[target_room].tier == 3)
+            except ValueError:
+                current_result.append(False)
+        results += Counter([True in current_result])
     return round(results[True] / results.total(), 4)
 
 
@@ -77,6 +82,6 @@ if __name__ == '__main__':
     print(f"Baseline WITHOUT AOTV: 0.2143")
     print(f"Baseline WITH AOTV: 0.211")
     # print(f"Baseline WITHOUT AOTV: "
-    #       f"{calc_results_specific_room(run_temple_always_upgrade, ValidRoomType.ITEM_DOUBLE_CORRUPT)}")
+    #       f"{calc_results_specific_room(run_temple_always_upgrade, [ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
     # print(f"Baseline WITH AOTV: "
-    #       f"{calc_results_specific_room(run_temple_always_upgrade, ValidRoomType.ITEM_DOUBLE_CORRUPT, aotv=True)}")
+    #       f"{calc_results_specific_room(run_temple_always_upgrade, [ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
