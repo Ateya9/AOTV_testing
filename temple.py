@@ -128,7 +128,10 @@ class Temple:
             self._room_types_remaining.remove(new_room_type)
         elif new_room_type != room.type:
             self._room_types_remaining[self._room_types_remaining.index(new_room_type)] = room.type
-        room += randint(1, 2) if rr and new_room_type == room.type else 1
+        upgrade_amount = 1
+        if rr and new_room_type == room.type and room.tier == 1:
+            upgrade_amount = randint(1, 2)
+        room += upgrade_amount
         room.type = new_room_type
 
     def apply_nexus(self):
