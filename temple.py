@@ -1,5 +1,5 @@
 from temple_room import TempleRoom
-from random import sample
+from random import sample, randint
 from enum import Enum
 
 
@@ -98,7 +98,7 @@ class Temple:
             count = 2
         return sample(self._room_types_remaining, count)
 
-    def upgrade_room(self, room: int | TempleRoom, new_room_type: ValidRoomType):
+    def upgrade_room(self, room: int | TempleRoom, new_room_type: ValidRoomType, rr: bool = False):
         """
         Upgrades the specified room tier and type.
 
@@ -107,6 +107,7 @@ class Temple:
 
         :param room: The room or room number to upgrade.
         :param new_room_type: The room type for this room to be changed to.
+        :param rr: Is Resource Reallocation active.
 
         :return: None
         """
@@ -127,7 +128,7 @@ class Temple:
             self._room_types_remaining.remove(new_room_type)
         elif new_room_type != room.type:
             self._room_types_remaining[self._room_types_remaining.index(new_room_type)] = room.type
-        room += 1
+        room += randint(1, 2) if rr else 1
         room.type = new_room_type
 
     def apply_nexus(self):
