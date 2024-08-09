@@ -36,7 +36,7 @@ def calc_results_specific_room(run_method_func, target_room: ValidRoomType, num_
 
 
 if __name__ == '__main__':
-    print("Ratios for T3 rooms when always upgrading:")
+    print("### Ratios of T3 rooms when always upgrading:")
     print(f"WITHOUT Artefacts of the Vaal: 0.2572")
     print(f"WITH Artefacts of the Vaal: 0.2462")
     print(f"WITHOUT AOTV and WITH Resource Reallocation: 0.4853")
@@ -47,10 +47,10 @@ if __name__ == '__main__':
     #       f"{calc_results(run_temple_always_upgrade, rr=True)}")
     # print(f"WITH AOTV and WITH Resource Reallocation: "
     #       f"{calc_results(run_temple_always_upgrade, aotv=True, rr=True)}")
-    print("Ratios for T3 Item Double Corrupt:")
-    # print(f"WITHOUT AOTV: {}")
-    # print(f"WITH AOTV: {}")
-    print(f"WITHOUT AOTV: "
-          f"{calc_results_specific_room(run_temple_always_upgrade, ValidRoomType.ITEM_DOUBLE_CORRUPT)}")
-    print(f"WITH AOTV: "
-          f"{calc_results_specific_room(run_temple_always_upgrade, ValidRoomType.ITEM_DOUBLE_CORRUPT, aotv=True)}")
+    print("### Ratios of T3 Item Double Corrupt:")
+    print(f"Baseline WITHOUT AOTV: 0.2143")
+    print(f"Baseline WITH AOTV: 0.211")
+    # print(f"Baseline WITHOUT AOTV: "
+    #       f"{calc_results_specific_room(run_temple_always_upgrade, ValidRoomType.ITEM_DOUBLE_CORRUPT)}")
+    # print(f"Baseline WITH AOTV: "
+    #       f"{calc_results_specific_room(run_temple_always_upgrade, ValidRoomType.ITEM_DOUBLE_CORRUPT, aotv=True)}")
