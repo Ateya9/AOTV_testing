@@ -128,7 +128,7 @@ class Temple:
             self._room_types_remaining.remove(new_room_type)
         elif new_room_type != room.type:
             self._room_types_remaining[self._room_types_remaining.index(new_room_type)] = room.type
-        room += randint(1, 2) if rr else 1
+        room += randint(1, 2) if rr and new_room_type == room.type else 1
         room.type = new_room_type
 
     def apply_nexus(self):
@@ -169,10 +169,12 @@ class Temple:
         # TODO: Remove __setitem__. upgrade_room() should probably be used instead.
         self.rooms[key] = value
 
-    def __contains__(self, item: ValidRoomType):
-        return item in [room.type for room in self.rooms]
+    def __contains__(self, item: TempleRoom):
+        return item in self.rooms
 
 
 if __name__ == "__main__":
     temple = Temple()
+    print(temple.rooms)
+    temple.upgrade_room(temple.rooms[0], ValidRoomType.ITEM_DOUBLE_CORRUPT, True)
     print(temple.rooms)
