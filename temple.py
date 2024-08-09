@@ -87,14 +87,16 @@ class Temple:
         """
         return [room for room in self.rooms if room.tier < 3]
 
-    def get_room_upgrade_option(self) -> ValidRoomType:
+    def get_room_upgrade_option(self, count: int = 1) -> list[ValidRoomType]:
         """
-        Returns a single room type that currently isn't present within this temple to act as a non-resident upgrade
-        option.
+        Returns one or two room types that currently isn't present within this temple to act as a non-resident option.
+        If supplied count isn't 1, defaults to 2.
 
-        :return: str
+        :return: list[ValidRoomType]
         """
-        return sample(self._room_types_remaining, 1)[0]
+        if count != 1:
+            count = 2
+        return sample(self._room_types_remaining, count)
 
     def upgrade_room(self, room: int | TempleRoom, new_room_type: ValidRoomType):
         """
