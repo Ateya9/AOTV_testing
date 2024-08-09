@@ -155,8 +155,12 @@ class Temple:
     def __iter__(self):
         yield from self.rooms
 
-    def __getitem__(self, item):
-        return self.rooms[item]
+    def __getitem__(self, item: int | ValidRoomType) -> TempleRoom:
+        if isinstance(item, int):
+            return self.rooms[item]
+        else:
+            index = [room.type for room in self.rooms].index(item)
+            return self.rooms[index]
 
     def __setitem__(self, key, value):
         self.rooms[key] = value
