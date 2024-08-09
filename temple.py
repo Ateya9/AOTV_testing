@@ -92,6 +92,7 @@ class Temple:
         Returns one or two room types that currently isn't present within this temple to act as a non-resident option.
         If supplied count isn't 1, defaults to 2.
 
+        :param count: How many upgrade options to get. Can only be 1 or 2.
         :return: list[ValidRoomType]
         """
         if count != 1:
