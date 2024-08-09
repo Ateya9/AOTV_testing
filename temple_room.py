@@ -5,33 +5,33 @@ class TempleRoom:
         :param room_tier: The tier of this room. Defaults to 0. Should always be positive.
         :param room_type: The type for this room. Defaults to None
         """
-        self.room_tier = room_tier
-        self.room_type = room_type
+        self.tier = room_tier
+        self.type = room_type
         self.connections: list[TempleRoom] = []
 
     def __int__(self) -> int:
-        return int(self.room_tier)
+        return int(self.tier)
 
     def __add__(self, other):
-        return TempleRoom(self.room_tier + int(other), self.room_type)
+        return TempleRoom(self.tier + int(other), self.type)
 
     def __iadd__(self, other):
-        self.room_tier = self.room_tier + int(other)
+        self.tier = self.tier + int(other)
         return self
 
     def __eq__(self, other):
         if isinstance(other, int):
-            return self.room_tier == other
+            return self.tier == other
         elif isinstance(other, TempleRoom):
-            return self.room_tier == other.room_tier and self.room_type == other.room_type
+            return self.tier == other.tier and self.type == other.type
         return False
 
     def __repr__(self):
-        if self.room_type is None:
+        if self.type is None:
             return f'TempleRoom()'
-        return f'TempleRoom({self.room_tier}, "{self.room_type}")'
+        return f'TempleRoom({self.tier}, "{self.type}")'
 
     def __str__(self):
-        if self.room_type is None:
+        if self.type is None:
             return f'un-tiered'
-        return f'T{self.room_tier} {self.room_type}'
+        return f'T{self.tier} {self.type}'

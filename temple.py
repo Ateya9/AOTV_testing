@@ -85,7 +85,7 @@ class Temple:
 
         :return: list[TempleRoom]
         """
-        return [room for room in self.rooms if room.room_tier < 3]
+        return [room for room in self.rooms if room.tier < 3]
 
     def get_room_upgrade_option(self) -> ValidRoomType:
         """
@@ -116,17 +116,17 @@ class Temple:
             raise IndexError('room does not exist in this temple.')
         if new_room_type not in ValidRoomType:
             raise TypeError("new_room_type must be a valid room type.")
-        if new_room_type != room.room_type and new_room_type not in self._room_types_remaining:
+        if new_room_type != room.type and new_room_type not in self._room_types_remaining:
             raise ValueError(f"room_type already present in temple.")
-        if room.room_tier == 3:
+        if room.tier == 3:
             raise IndexError(f"Invalid room. Room is already tier 3.")
 
-        if room.room_type is None:
+        if room.type is None:
             self._room_types_remaining.remove(new_room_type)
-        elif new_room_type != room.room_type:
-            self._room_types_remaining[self._room_types_remaining.index(new_room_type)] = room.room_type
+        elif new_room_type != room.type:
+            self._room_types_remaining[self._room_types_remaining.index(new_room_type)] = room.type
         room += 1
-        room.room_type = new_room_type
+        room.type = new_room_type
 
     def apply_nexus(self):
         """
@@ -137,17 +137,17 @@ class Temple:
         """
         nexus_room: TempleRoom
         try:
-            nexus_room_index = [room.room_type for room in self.rooms].index(ValidRoomType.ADJACENT_ROOM_LEVELS)
+            nexus_room_index = [room.type for room in self.rooms].index(ValidRoomType.ADJACENT_ROOM_LEVELS)
             nexus_room = self.rooms[nexus_room_index]
         except ValueError:
             return
-        connections_to_upgrade = [room for room in nexus_room.connections if room.room_tier > 0]
+        connections_to_upgrade = [room for room in nexus_room.connections if room.tier > 0]
         if len(connections_to_upgrade) == 0:
             return
-        if 3 > nexus_room.room_tier < len(connections_to_upgrade):
-            connections_to_upgrade = sample(connections_to_upgrade, nexus_room.room_tier)
+        if 3 > nexus_room.tier < len(connections_to_upgrade):
+            connections_to_upgrade = sample(connections_to_upgrade, nexus_room.tier)
         for room in connections_to_upgrade:
-            room += 1 if room.room_tier < 3 else 0
+            room += 1 if room.tier < 3 else 0
 
     def __len__(self):
         return len(self.rooms)
@@ -162,7 +162,7 @@ class Temple:
         self.rooms[key] = value
 
     def __contains__(self, item: ValidRoomType):
-        return item in [room.room_type for room in self.rooms]
+        return item in [room.type for room in self.rooms]
 
 
 if __name__ == "__main__":
