@@ -1,11 +1,9 @@
 class TempleRoom:
-    DEFAULT_ROOM_TYPE = "un-tiered"
-
-    def __init__(self, room_tier: int = 0, room_type: str = DEFAULT_ROOM_TYPE):
+    def __init__(self, room_tier: int = 0, room_type=None):
         """
         An object that represents a room within a temple of Atzoatl.
         :param room_tier: The tier of this room. Defaults to 0. Should always be positive.
-        :param room_type: The type for this room. Defaults to 'un-tiered'
+        :param room_type: The type for this room. Defaults to None
         """
         self.room_tier = room_tier
         self.room_type = room_type
@@ -29,7 +27,11 @@ class TempleRoom:
         return False
 
     def __repr__(self):
+        if self.room_type is None:
+            return f'TempleRoom()'
         return f'TempleRoom({self.room_tier}, "{self.room_type}")'
 
     def __str__(self):
+        if self.room_type is None:
+            return f'un-tiered'
         return f'T{self.room_tier} {self.room_type}'
