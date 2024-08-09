@@ -78,6 +78,15 @@ class Temple:
         """
         return self._room_types_remaining
 
+    @property
+    def valid_rooms_remaining(self) -> list[TempleRoom]:
+        """
+        Returns a list of rooms that aren't T3.
+
+        :return: list[TempleRoom]
+        """
+        return [room for room in self.rooms if room.room_tier < 3]
+
     def get_room_upgrade_option(self) -> str:
         """
         Returns a single room type that currently isn't present within this temple to act as a non-resident upgrade
@@ -87,34 +96,37 @@ class Temple:
         """
         return sample(self._room_types_remaining, 1)[0]
 
-    def upgrade_room(self, room_num: int, room_type: ValidRoomTypes):
+    def upgrade_room(self, room: int | TempleRoom, new_room_type: ValidRoomTypes):
         """
         Upgrades the specified room tier and type.
 
-        Raises IndexError if room is already T3.
+        Raises IndexError if room is invalid.
+        Raises ValueError if room_type is already present in temple.
 
-        Raises IndexError if invalid room number is supplied.
-
-        Raises ValueError if invalid or already present room type is supplied.
-
-        :param room_num: The room number to upgrade.
-        :param room_type: The room type for this room to be changed to.
+        :param room: The room or room number to upgrade.
+        :param new_room_type: The room type for this room to be changed to.
 
         :return: None
         """
-        if 0 > room_num >= len(self.rooms):
-            raise IndexError(f"room must be between 0 and {len(self.rooms) - 1}")
-        current_room_type = self.rooms[room_num].room_type
-        if room_type != current_room_type and room_type not in self._room_types_remaining:
+        if isinstance(room, int):
+            if 0 > room >= len(self.rooms):
+                raise IndexError(f"room must be between 0 and {len(self.rooms) - 1}.")
+            room = self.rooms[room]
+        elif room not in self:
+            raise IndexError('room does not exist in this temple.')
+        if new_room_type not in ValidRoomTypes:
+            raise TypeError("new_room_type must be a valid room type.")
+        if new_room_type != room.room_type and new_room_type not in self._room_types_remaining:
             raise ValueError(f"room_type already present in temple.")
-        if self.rooms[room_num].room_tier == 3:
+        if room.room_tier == 3:
             raise IndexError(f"Invalid room. Room is already tier 3.")
-        if current_room_type is None:
-            self._room_types_remaining.remove(room_type)
-        elif room_type != current_room_type:
-            self._room_types_remaining[self._room_types_remaining.index(room_type)] = current_room_type
-        self.rooms[room_num] += 1
-        self.rooms[room_num].room_type = room_type
+
+        if room.room_type is None:
+            self._room_types_remaining.remove(new_room_type)
+        elif new_room_type != room.room_type:
+            self._room_types_remaining[self._room_types_remaining.index(new_room_type)] = room.room_type
+        room += 1
+        room.room_type = new_room_type
 
     def apply_nexus(self):
         """
@@ -154,6 +166,5 @@ class Temple:
 
 
 if __name__ == "__main__":
-    for _ in range(10):
-        temple = Temple(desired_room=ValidRoomTypes.ITEM_DOUBLE_CORRUPT, start_with_desired_room=False)
-        print(ValidRoomTypes.ITEM_DOUBLE_CORRUPT in temple)
+    temple = Temple()
+    print(temple.rooms)
