@@ -3,7 +3,7 @@ from random import sample
 from enum import Enum
 
 
-class ValidRoomTypes(Enum):
+class ValidRoomType(Enum):
     UNIQUE_SACRIFICE = "Unique Sacrifice"
     BODY_ARMOURS = "Body Armours"
     JEWELLERY = "Jewellery"
@@ -33,7 +33,7 @@ class ValidRoomTypes(Enum):
 
 class Temple:
     def __init__(self, num_starting_tiered_rooms: int = 7,
-                 desired_room: None | ValidRoomTypes = None,
+                 desired_room: None | ValidRoomType = None,
                  start_with_desired_room: bool = False):
         """
         An object representing a temple of Atzoatl.
@@ -41,12 +41,12 @@ class Temple:
         :param desired_room: The desired T3 room for this Temple.
         :param start_with_desired_room: controls whether this temple starts with a T1 version of the desired room.
         """
-        self._room_types_remaining = list(ValidRoomTypes)
+        self._room_types_remaining = list(ValidRoomType)
         self.rooms: list[TempleRoom] = []
         for _ in range(11):
             self.rooms.append(TempleRoom())
         rooms_to_tier = sample(range(len(self.rooms)), num_starting_tiered_rooms)
-        rooms_to_tier_types: list[ValidRoomTypes] = []
+        rooms_to_tier_types: list[ValidRoomType] = []
         starting_room_types_remaining = self._room_types_remaining.copy()
         if desired_room is not None:
             if start_with_desired_room:
@@ -70,7 +70,7 @@ class Temple:
         self.rooms[10].connections = [self.rooms[i] for i in (7, 8, 9)]
 
     @property
-    def valid_room_types_remaining(self) -> list[str]:
+    def valid_room_types_remaining(self) -> list[ValidRoomType]:
         """
         Returns a list of valid room types that aren't currently present within this temple.
 
@@ -87,7 +87,7 @@ class Temple:
         """
         return [room for room in self.rooms if room.room_tier < 3]
 
-    def get_room_upgrade_option(self) -> str:
+    def get_room_upgrade_option(self) -> ValidRoomType:
         """
         Returns a single room type that currently isn't present within this temple to act as a non-resident upgrade
         option.
@@ -96,7 +96,7 @@ class Temple:
         """
         return sample(self._room_types_remaining, 1)[0]
 
-    def upgrade_room(self, room: int | TempleRoom, new_room_type: ValidRoomTypes):
+    def upgrade_room(self, room: int | TempleRoom, new_room_type: ValidRoomType):
         """
         Upgrades the specified room tier and type.
 
@@ -114,7 +114,7 @@ class Temple:
             room = self.rooms[room]
         elif room not in self:
             raise IndexError('room does not exist in this temple.')
-        if new_room_type not in ValidRoomTypes:
+        if new_room_type not in ValidRoomType:
             raise TypeError("new_room_type must be a valid room type.")
         if new_room_type != room.room_type and new_room_type not in self._room_types_remaining:
             raise ValueError(f"room_type already present in temple.")
@@ -137,7 +137,7 @@ class Temple:
         """
         nexus_room: TempleRoom
         try:
-            nexus_room_index = [room.room_type for room in self.rooms].index(ValidRoomTypes.ADJACENT_ROOM_LEVELS)
+            nexus_room_index = [room.room_type for room in self.rooms].index(ValidRoomType.ADJACENT_ROOM_LEVELS)
             nexus_room = self.rooms[nexus_room_index]
         except ValueError:
             return
@@ -161,7 +161,7 @@ class Temple:
     def __setitem__(self, key, value):
         self.rooms[key] = value
 
-    def __contains__(self, item: ValidRoomTypes):
+    def __contains__(self, item: ValidRoomType):
         return item in [room.room_type for room in self.rooms]
 
 
