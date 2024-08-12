@@ -81,7 +81,6 @@ def calc_ratio_target_t3_rooms(run_method_func,
                                start_with_initial_room: bool = False,
                                num_runs: int = 100000,
                                aotv: bool = False):
-    # TODO: add parameter to control whether the temple starts with a desired room or not.
     """
     Calculate the ratio of T3 desired rooms in temples using the supplied function to run them. rr is assumed active.
 
