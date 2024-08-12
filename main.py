@@ -4,6 +4,17 @@ from temple_room import TempleRoom
 from temple import Temple, ValidRoomType
 
 
+def text_red(text, conditional: bool) -> str:
+    """
+    Surrounds the provided text with ANSI codes to make it red when printed. This is for debugging.
+
+    :param text: What will be printed as a str.
+    :param conditional: whether the text should be red.
+    :return:
+    """
+    return '\033[91m' + str(text) + '\033[0m' if conditional else str(text)
+
+
 def run_t_always_upgrade(temple: Temple, **kwargs) -> Temple:
     """
     Run a temple, always upgrading rooms. Choose a random room type when upgrading un-tiered rooms.
@@ -52,6 +63,47 @@ def run_t_always_pick_target_rooms(temple: Temple, **kwargs):
                     room_type = target_room
                 else:
                     room_type = room_upgrade_options[0] if picked_room.type is None else picked_room.type
+            temple.upgrade_room(room=picked_room, new_room_type=room_type, rr=rr)
+    temple.apply_nexus()
+    return temple
+
+
+def run_t_place_desired_room_on_t2(temple: Temple, **kwargs) -> Temple:
+    """
+    Run a temple that is missing a desired room, prioritising getting rooms to t2 by side-grading them, and then
+    hopefully hitting a desired room when landing on them a second time. Will (if possible) not pick a desired room as
+    an upgrade option on a T0 room.
+
+    :param temple: The Temple Object to run.
+    :keyword target_rooms (list[ValidRoomType] | ValidRoomType): (default ValidRoomType.ITEM_DOUBLE_CORRUPT)
+    The desired target rooms.
+    :keyword aotv (bool): (default False) Whether Resource Reallocation is active.
+    :keyword rr (bool): (default False) Whether Resource Reallocation is active.
+    :return:
+    """
+    # TODO: Double check this is definitely working as intended.
+    if 'target_room' in kwargs:
+        raise KeyError('invalid key target_room. Should be target_rooms.')
+    target_rooms = kwargs['target_rooms'] if 'target_rooms' in kwargs else [ValidRoomType.ITEM_DOUBLE_CORRUPT]
+    aotv = kwargs['aotv'] if 'aotv' in kwargs else False
+    rr = kwargs['rr'] if 'rr' in kwargs else False
+    if not isinstance(target_rooms, list):
+        target_rooms = [target_rooms]
+    incurs_per_area, num_areas = (4, 3) if aotv else (3, 4)
+    for _ in range(num_areas):
+        for picked_room in sample(temple.valid_rooms_remaining, incurs_per_area):
+            room_upgrade_options = temple.get_room_upgrade_option(2 if picked_room.tier == 0 else 1)
+            room_type = room_upgrade_options[0]
+            if picked_room.tier == 2:
+                for target_room in target_rooms:
+                    if target_room in room_upgrade_options or target_room is picked_room.type:
+                        room_type = target_room
+            elif picked_room.tier == 0:
+                for target_room in target_rooms:
+                    if target_room in room_upgrade_options:
+                        room_upgrade_options.remove(target_room)
+                        break
+                room_type = room_upgrade_options[0]
             temple.upgrade_room(room=picked_room, new_room_type=room_type, rr=rr)
     temple.apply_nexus()
     return temple
@@ -171,3 +223,13 @@ if __name__ == '__main__':
     #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
     #                                     start_with_initial_room=False,
     #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
+    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2 WITHOUT AOTV: "
+          f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
+                                        initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+                                        start_with_initial_room=False,
+                                        target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
+    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2 WITH AOTV: "
+          f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
+                                        initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+                                        start_with_initial_room=False,
+                                        target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
