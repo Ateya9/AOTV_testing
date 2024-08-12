@@ -77,6 +77,8 @@ def calc_ratio_t3_rooms(run_method_func, num_runs: int = 100000, aotv: bool = Fa
 
 def calc_ratio_target_t3_rooms(run_method_func,
                                target_rooms: list[ValidRoomType],
+                               initial_room: ValidRoomType | None = None,
+                               start_with_initial_room: bool = False,
                                num_runs: int = 100000,
                                aotv: bool = False):
     # TODO: add parameter to control whether the temple starts with a desired room or not.
@@ -85,13 +87,19 @@ def calc_ratio_target_t3_rooms(run_method_func,
 
     :param run_method_func: The function to use for running the temples.
     :param target_rooms: The desired target rooms.
+    :param initial_room: Which room to start the temple with or not, depending on start_with_initial_room.
+    :param start_with_initial_room: Controls whether the room specified by initial_room starts in the temple.
     :param num_runs: How many temple runs to do.
     :param aotv: Whether Artefacts of the Vaal is active.
     :return: The ratio of T3 desired target rooms.
     """
     results = Counter()
     for _ in range(num_runs):
-        current_temple: Temple = run_method_func(Temple(), target_rooms=target_rooms, aotv=aotv, rr=True)
+        if initial_room:
+            temple = Temple(desired_room=initial_room, start_with_desired_room=start_with_initial_room)
+        else:
+            temple = Temple()
+        current_temple: Temple = run_method_func(temple, target_rooms=target_rooms, aotv=aotv, rr=True)
         current_result: list[bool] = []
         for target_room in target_rooms:
             try:
@@ -109,11 +117,16 @@ if __name__ == '__main__':
     print(f"WITHOUT AOTV and WITH Resource Reallocation: 0.4856")
     print(f"WITH AOTV and WITH Resource Reallocation: 0.4798")
 
+    print("")
     print("### Ratios of T3 Item Double Corrupt:")
     print(f"Baseline WITHOUT AOTV: 0.2149")
     print(f"Baseline WITH AOTV: 0.2107")
-    # print(f"Always Pick WITHOUT AOTV: ")
-    # print(f"Always Pick WITH AOTV: ")
+    print(f"Baseline, always pick target room WITHOUT AOTV: 0.3955")
+    print(f"Baseline, always pick target room WITH AOTV: 0.3815")
+    print(f"Room in initial temple, always pick target room WITHOUT AOTV: 0.6138")
+    print(f"Room in initial temple, always pick target room WITH AOTV: 0.6158")
+    print(f"Room NOT in initial temple, always pick target room WITHOUT AOTV: 0.3107")
+    print(f"Room NOT in initial temple, always pick target room WITH AOTV: 0.2910")
 
     # print("### Ratios of T3 rooms when always upgrading:")
     # print(f"WITHOUT Artefacts of the Vaal:"
@@ -125,6 +138,7 @@ if __name__ == '__main__':
     # print(f"WITH AOTV and WITH Resource Reallocation:"
     #       f"{calc_ratio_t3_rooms(run_t_always_upgrade, aotv=True, rr=True)}")
 
+    # print("")
     # print("### Ratios of T3 Item Double Corrupt:")
     # print(f"Baseline WITHOUT AOTV: "
     #       f"{calc_ratio_target_t3_rooms(run_t_always_upgrade,
@@ -132,9 +146,29 @@ if __name__ == '__main__':
     # print(f"Baseline WITH AOTV: "
     #       f"{calc_ratio_target_t3_rooms(run_t_always_upgrade,
     #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
-    print(f"Always Pick WITHOUT AOTV: "
-          f"{calc_ratio_target_t3_rooms(run_t_always_pick_target_rooms,
-                                        target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
-    print(f"Always Pick WITH AOTV: "
-          f"{calc_ratio_target_t3_rooms(run_t_always_pick_target_rooms,
-                                        target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
+    # print(f"Baseline, always pick target room WITHOUT AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_always_pick_target_rooms,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
+    # print(f"Baseline, always pick target room WITH AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_always_pick_target_rooms,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
+    # print(f"Room in initial temple, always pick target room WITHOUT AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_always_pick_target_rooms,
+    #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+    #                                     start_with_initial_room=True,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
+    # print(f"Room in initial temple, always pick target room WITH AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_always_pick_target_rooms,
+    #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+    #                                     start_with_initial_room=True,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
+    # print(f"Room NOT in initial temple, always pick target room WITHOUT AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_always_pick_target_rooms,
+    #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+    #                                     start_with_initial_room=False,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
+    # print(f"Room NOT in initial temple, always pick target room WITH AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_always_pick_target_rooms,
+    #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+    #                                     start_with_initial_room=False,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
