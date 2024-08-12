@@ -35,6 +35,8 @@ def run_t_always_pick_target_rooms(temple: Temple, **kwargs):
     :keyword rr (bool): (default False) Whether Resource Reallocation is active.
     :return: The completed Temple object.
     """
+    if 'target_room' in kwargs:
+        raise KeyError('invalid key target_room. Should be target_rooms.')
     target_rooms = kwargs['target_rooms'] if 'target_rooms' in kwargs else [ValidRoomType.ITEM_DOUBLE_CORRUPT]
     aotv = kwargs['aotv'] if 'aotv' in kwargs else False
     rr = kwargs['rr'] if 'rr' in kwargs else False
