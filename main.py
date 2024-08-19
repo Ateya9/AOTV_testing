@@ -2,6 +2,9 @@ from random import sample, randint
 from collections import Counter
 from temple_room import TempleRoom
 from temple import Temple, ValidRoomType
+from up_room_logic import (prio_upgrade_unless_target,
+                           prio_sidegrade_unless_target,
+                           prio_sidegrade_unless_target_no_t0)
 
 
 def text_red(text, conditional: bool) -> str:
@@ -29,8 +32,11 @@ def run_t_always_upgrade(temple: Temple, **kwargs) -> Temple:
     incurs_per_area, num_areas = (4, 3) if aotv else (3, 4)
     for _ in range(num_areas):
         for picked_room in sample(temple.valid_rooms_remaining, incurs_per_area):
-            room_type = temple.get_room_upgrade_option()[0] if picked_room.type is None else picked_room.type
-            temple.upgrade_room(picked_room, room_type, rr)
+            temple.upgrade_room(room=picked_room,
+                                new_room_type=prio_upgrade_unless_target(temple=temple,
+                                                                         room=picked_room,
+                                                                         target_rooms=None),
+                                rr=rr)
     temple.apply_nexus()
     return temple
 
@@ -56,14 +62,11 @@ def run_t_always_pick_target_rooms(temple: Temple, **kwargs):
     incurs_per_area, num_areas = (4, 3) if aotv else (3, 4)
     for _ in range(num_areas):
         for picked_room in sample(temple.valid_rooms_remaining, incurs_per_area):
-            room_upgrade_options = temple.get_room_upgrade_option(2 if picked_room.tier == 0 else 1)
-            room_type = picked_room.type
-            for target_room in target_rooms:
-                if target_room in room_upgrade_options:
-                    room_type = target_room
-                else:
-                    room_type = room_upgrade_options[0] if picked_room.type is None else picked_room.type
-            temple.upgrade_room(room=picked_room, new_room_type=room_type, rr=rr)
+            temple.upgrade_room(room=picked_room,
+                                new_room_type=prio_upgrade_unless_target(temple=temple,
+                                                                         room=picked_room,
+                                                                         target_rooms=target_rooms),
+                                rr=rr)
     temple.apply_nexus()
     return temple
 
@@ -91,19 +94,11 @@ def run_t_place_desired_room_on_t2(temple: Temple, **kwargs) -> Temple:
     incurs_per_area, num_areas = (4, 3) if aotv else (3, 4)
     for _ in range(num_areas):
         for picked_room in sample(temple.valid_rooms_remaining, incurs_per_area):
-            room_upgrade_options = temple.get_room_upgrade_option(2 if picked_room.tier == 0 else 1)
-            room_type = room_upgrade_options[0]
-            if picked_room.tier == 2:
-                for target_room in target_rooms:
-                    if target_room in room_upgrade_options or target_room is picked_room.type:
-                        room_type = target_room
-            elif picked_room.tier == 0:
-                for target_room in target_rooms:
-                    if target_room in room_upgrade_options:
-                        room_upgrade_options.remove(target_room)
-                        break
-                room_type = room_upgrade_options[0]
-            temple.upgrade_room(room=picked_room, new_room_type=room_type, rr=rr)
+            temple.upgrade_room(room=picked_room,
+                                new_room_type=prio_sidegrade_unless_target_no_t0(temple=temple,
+                                                                                 room=picked_room,
+                                                                                 target_rooms=target_rooms),
+                                rr=rr)
     temple.apply_nexus()
     return temple
 
@@ -177,6 +172,8 @@ if __name__ == '__main__':
     print(f"Room in initial temple, always pick target room WITH AOTV: 0.6158")
     print(f"Room NOT in initial temple, always pick target room WITHOUT AOTV: 0.3107")
     print(f"Room NOT in initial temple, always pick target room WITH AOTV: 0.2910")
+    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITHOUT AOTV: 0.2636")
+    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITH AOTV: 0.2528")
 
     # print("### Ratios of T3 rooms when always upgrading:")
     # print(f"WITHOUT Artefacts of the Vaal:"
@@ -187,7 +184,7 @@ if __name__ == '__main__':
     #       f"{calc_ratio_t3_rooms(run_t_always_upgrade, rr=True)}")
     # print(f"WITH AOTV and WITH Resource Reallocation:"
     #       f"{calc_ratio_t3_rooms(run_t_always_upgrade, aotv=True, rr=True)}")
-
+    #
     # print("")
     # print("### Ratios of T3 Item Double Corrupt:")
     # print(f"Baseline WITHOUT AOTV: "
@@ -222,13 +219,13 @@ if __name__ == '__main__':
     #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
     #                                     start_with_initial_room=False,
     #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
-    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITHOUT AOTV: "
-          f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
-                                        initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
-                                        start_with_initial_room=False,
-                                        target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
-    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITH AOTV: "
-          f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
-                                        initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
-                                        start_with_initial_room=False,
-                                        target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
+    # print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITHOUT AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
+    #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+    #                                     start_with_initial_room=False,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
+    # print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITH AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
+    #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+    #                                     start_with_initial_room=False,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
