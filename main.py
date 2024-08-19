@@ -203,6 +203,48 @@ def run_t_prio_t2_until_target_exists_prio_nexus(temple: Temple, **kwargs) -> Te
     return temple
 
 
+def run_t_prio_t2_until_target_exists_prio_nexus_early_stop(temple: Temple, **kwargs) -> Temple:
+    """
+    Run a temple that is missing a desired room, prioritising getting rooms to t2 by side-grading them, and then
+    hopefully hitting a desired room when landing on them a second time. Once a target room exists in the temple,
+    prioritise upgrading rooms instead of side-grading rooms, Even if target room was upgraded from a t0 room. Also
+    prioritises putting a nexus next to a target room. If target room is hit early in an area (the first incursion
+    encountered for example), stop doing incursions in that area, so that room can be encountered again.
+
+    :param temple: The Temple Object to run.
+    :keyword target_rooms (list[ValidRoomType] | ValidRoomType): (default ValidRoomType.ITEM_DOUBLE_CORRUPT)
+    The desired target rooms.
+    :keyword aotv (bool): (default False) Whether Resource Reallocation is active.
+    :keyword rr (bool): (default False) Whether Resource Reallocation is active.
+    :return:
+    """
+    if 'target_room' in kwargs:
+        raise KeyError('invalid key target_room. Should be target_rooms.')
+    target_rooms = kwargs['target_rooms'] if 'target_rooms' in kwargs else [ValidRoomType.ITEM_DOUBLE_CORRUPT]
+    aotv = kwargs['aotv'] if 'aotv' in kwargs else False
+    rr = kwargs['rr'] if 'rr' in kwargs else False
+    if not isinstance(target_rooms, list):
+        target_rooms = [target_rooms]
+    incurs_per_area, num_areas = (4, 3) if aotv else (3, 4)
+    incursions_remaining = incurs_per_area * num_areas
+    while incursions_remaining > 0:
+        incurs_in_this_area = incurs_per_area if incurs_per_area < incursions_remaining else incursions_remaining
+        for picked_room in sample(temple.valid_rooms_remaining, incurs_in_this_area):
+            target_exists = any([target_room not in temple.valid_room_types_remaining for target_room in target_rooms])
+            decision_type = prio_upgrade_unless_target if target_exists else prio_sidegrade_unless_target
+            temple.upgrade_room(room=picked_room,
+                                new_room_type=prio_adjacent_nexus(default_decision=decision_type,
+                                                                  temple=temple,
+                                                                  room=picked_room,
+                                                                  target_rooms=target_rooms),
+                                rr=rr)
+            incursions_remaining -= 1
+            if picked_room.type in target_rooms:
+                break
+    temple.apply_nexus()
+    return temple
+
+
 def calc_ratio_t3_rooms(run_method_func, num_runs: int = 100000, aotv: bool = False, rr: bool = False) -> float:
     """
     Calculate the ratio of T3 rooms in temples using the supplied function to run them, ignoring room types.
@@ -275,14 +317,16 @@ if __name__ == '__main__':
     print("### Ratios of T3 Item Double Corrupt, room NOT in initial Temple:")
     print(f"Always pick target room WITHOUT AOTV: 0.3107")
     print(f"Always pick target room WITH AOTV: 0.2910")
-    print(f"Prio t2 rooms, pick target room on t2, no target on t0 WITHOUT AOTV: 0.2636")
-    print(f"Prio t2 rooms, pick target room on t2, no target on t0 WITH AOTV: 0.2528")
-    print(f"Prio t2 rooms, pick target room on t2, target on t0 WITHOUT AOTV: 0.2973")
-    print(f"Prio t2 rooms, pick target room on t2, target on t0 WITH AOTV: 0.2807")
-    print(f"Prio t2 rooms, until target exists, then always upgrade WITHOUT AOTV: 0.3145")
-    print(f"Prio t2 rooms, until target exists, then always upgrade WITH AOTV: 0.298")
-    print(f"Prio t2 rooms, until target exists, then always upgrade, prio adjacent nexus WITHOUT AOTV: 0.3258")
-    print(f"Prio t2 rooms, until target exists, then always upgrade, prio adjacent nexus WITH AOTV: 0.3113")
+    print(f"Prio t2 rooms pick target room on t2, no target on t0 WITHOUT AOTV: 0.2636")
+    print(f"Prio t2 rooms pick target room on t2, no target on t0 WITH AOTV: 0.2528")
+    print(f"Prio t2 rooms pick target room on t2, target on t0 WITHOUT AOTV: 0.2973")
+    print(f"Prio t2 rooms pick target room on t2, target on t0 WITH AOTV: 0.2807")
+    print(f"Prio t2 rooms until target exists, then always upgrade WITHOUT AOTV: 0.3145")
+    print(f"Prio t2 rooms until target exists, then always upgrade WITH AOTV: 0.298")
+    print(f"Prio t2 rooms until target exists, then always upgrade, prio adjacent nexus WITHOUT AOTV: 0.3258")
+    print(f"Prio t2 rooms until target exists, then always upgrade, prio adjacent nexus WITH AOTV: 0.3113")
+    print(f"Prio t2 rooms until target exists, then always upgrade, prio adjacent nexus, early stop WITHOUT AOTV:0.355")
+    print(f"Prio t2 rooms until target exists, then always upgrade, prio adjacent nexus, early stop WITH AOTV: 0.3544")
 
     # print("### Ratios of T3 rooms when always upgrading:")
     # print(f"WITHOUT Artefacts of the Vaal:"
@@ -367,6 +411,16 @@ if __name__ == '__main__':
     #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
     # print(f"Prio t2 rooms, until target exists, then always upgrade, prio adjacent nexus WITH AOTV: "
     #       f"{calc_ratio_target_t3_rooms(run_t_prio_t2_until_target_exists_prio_nexus,
+    #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+    #                                     start_with_initial_room=False,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
+    # print(f"Prio t2 rooms, until target exists, then always upgrade, prio adjacent nexus, early stop WITHOUT AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_prio_t2_until_target_exists_prio_nexus_early_stop,
+    #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
+    #                                     start_with_initial_room=False,
+    #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
+    # print(f"Prio t2 rooms, until target exists, then always upgrade, prio adjacent nexus, early stop WITH AOTV: "
+    #       f"{calc_ratio_target_t3_rooms(run_t_prio_t2_until_target_exists_prio_nexus_early_stop,
     #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
     #                                     start_with_initial_room=False,
     #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
