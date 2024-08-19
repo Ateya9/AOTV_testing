@@ -1,6 +1,5 @@
-from random import sample, randint
+from random import sample
 from collections import Counter
-from temple_room import TempleRoom
 from temple import Temple, ValidRoomType
 from up_room_logic import (prio_upgrade_unless_target,
                            prio_sidegrade_unless_target,
