@@ -81,7 +81,6 @@ def run_t_place_desired_room_on_t2(temple: Temple, **kwargs) -> Temple:
     :keyword rr (bool): (default False) Whether Resource Reallocation is active.
     :return:
     """
-    # TODO: Double check this is definitely working as intended.
     if 'target_room' in kwargs:
         raise KeyError('invalid key target_room. Should be target_rooms.')
     target_rooms = kwargs['target_rooms'] if 'target_rooms' in kwargs else [ValidRoomType.ITEM_DOUBLE_CORRUPT]
@@ -223,12 +222,12 @@ if __name__ == '__main__':
     #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
     #                                     start_with_initial_room=False,
     #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
-    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2 WITHOUT AOTV: "
+    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITHOUT AOTV: "
           f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
                                         initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
                                         start_with_initial_room=False,
                                         target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
-    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2 WITH AOTV: "
+    print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITH AOTV: "
           f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
                                         initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
                                         start_with_initial_room=False,
