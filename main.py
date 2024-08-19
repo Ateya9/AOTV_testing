@@ -71,7 +71,7 @@ def run_t_always_pick_target_rooms(temple: Temple, **kwargs):
     return temple
 
 
-def run_t_place_desired_room_on_t2(temple: Temple, **kwargs) -> Temple:
+def run_t_place_desired_room_on_t2_no_t0(temple: Temple, **kwargs) -> Temple:
     """
     Run a temple that is missing a desired room, prioritising getting rooms to t2 by side-grading them, and then
     hopefully hitting a desired room when landing on them a second time. Will (if possible) not pick a desired room as
@@ -220,12 +220,12 @@ if __name__ == '__main__':
     #                                     start_with_initial_room=False,
     #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
     # print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITHOUT AOTV: "
-    #       f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
+    #       f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2_no_t0,
     #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
     #                                     start_with_initial_room=False,
     #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT])}")
     # print(f"Room NOT in initial temple, prio t2 rooms, pick target room on t2, no target on t0 WITH AOTV: "
-    #       f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2,
+    #       f"{calc_ratio_target_t3_rooms(run_t_place_desired_room_on_t2_no_t0,
     #                                     initial_room=ValidRoomType.ITEM_DOUBLE_CORRUPT,
     #                                     start_with_initial_room=False,
     #                                     target_rooms=[ValidRoomType.ITEM_DOUBLE_CORRUPT], aotv=True)}")
