@@ -74,3 +74,36 @@ def prio_sidegrade_unless_target(temple: Temple,
                 room_type = target_rooms[index]
             index += 1
     return room_type
+
+
+def prio_adjacent_nexus(default_decision,
+                        temple: Temple,
+                        room: TempleRoom,
+                        target_rooms: None | list[ValidRoomType] = None) -> ValidRoomType:
+    """
+    Prioritises placing a nexus (the room that upgrades adjacent rooms) next to a desired room. Unless the current room
+    is a desired room, in which case, prioritises upgrading. If a Nexus isn't an upgrade option or room is not adjacent
+    to a target room, falls back onto default_decision and returns that function result.
+
+    :param default_decision: The up_room_logic function to fall back on.
+    :param temple: The temple object.
+    :param room: The room object in the process of being upgraded.
+    :param target_rooms: The desired target room types. Can be None.
+    :return:
+    """
+    if not isinstance(target_rooms, list):
+        target_rooms = [target_rooms]
+    if room.type is not None and room.type in target_rooms:
+        return room.type
+    upgrade_options = temple.get_room_upgrade_option(2 if room.tier == 0 else 1)
+    adjacent_room_types = [adjacent_room.type for adjacent_room in room.connections]
+    target_rooms_in_adjacent_rooms = [target_room in adjacent_room_types for target_room in target_rooms]
+    nexus_is_upgrade_option = (ValidRoomType.ADJACENT_ROOM_LEVELS in upgrade_options
+                               or room.type is ValidRoomType.ADJACENT_ROOM_LEVELS)
+    if nexus_is_upgrade_option and any(target_rooms_in_adjacent_rooms):
+        room_type = ValidRoomType.ADJACENT_ROOM_LEVELS
+    else:
+        room_type = default_decision(temple=temple,
+                                     room=room,
+                                     target_rooms=target_rooms)
+    return room_type
